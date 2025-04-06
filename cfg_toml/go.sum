@@ -1,4 +1,6 @@
 github.com/BurntSushi/toml v1.4.0 h1:kuoIxZQy2WRRk1pttg9asf+WVv6tWQuBNVmK8+nqPr0=
 github.com/BurntSushi/toml v1.4.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
-gopkg.in/cfg.v0 v0.18.5 h1:QqXH/Gy2c4QUQJTV2BN8UAuL/rqZ3IwhvxeC8OgzquA=
-gopkg.in/cfg.v0 v0.18.5/go.mod h1:NXaRp+1e6bkO4dJn+wZ71xyaihMDYPtCSvEhMTm/H3E=
+github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
+github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
+gopkg.in/cfg.v0 v0.18.7 h1:XeAeuSFrHhbuTM1xNsSFt+4qFG9ltinOk0F7Cxbqu6I=
+gopkg.in/cfg.v0 v0.18.7/go.mod h1:KQ00jBVtCgynXFOm/JVaX69+cxCk/UTXINWs7jq0f/Y=

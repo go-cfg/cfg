@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"gopkg.in/cfg.v0"
-	"gopkg.in/cfg.v0/cfghcl"
+	"gopkg.in/cfg.v0/cfg_hcl"
 )
 
 //go:embed testdata
@@ -24,7 +24,7 @@ func TestHCLEmbed(t *testing.T) {
 		SkipFlags:          true,
 		FailOnFileNotFound: true,
 		FileDecoders: map[string]cfg.FileDecoder{
-			".hcl": cfghcl.New(),
+			".hcl": cfg_hcl.New(),
 		},
 		Files:      []string{"testdata/config.hcl"},
 		FileSystem: configEmbed,
@@ -50,7 +50,7 @@ func TestHCL(t *testing.T) {
 		SkipEnv:      true,
 		SkipFlags:    true,
 		FileDecoders: map[string]cfg.FileDecoder{
-			".hcl": cfghcl.New(),
+			".hcl": cfg_hcl.New(),
 		},
 		Files: []string{filepath},
 	})

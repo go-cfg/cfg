@@ -2,13 +2,14 @@ package cfg
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io/fs"
 	"os"
 	"reflect"
 	"strings"
 	"unicode"
+
+	flag "github.com/spf13/pflag"
 )
 
 func assertStruct(x interface{}) {

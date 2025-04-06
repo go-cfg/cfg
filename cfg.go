@@ -1,12 +1,13 @@
 package cfg
 
 import (
-	"flag"
 	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
+
+	flag "github.com/spf13/pflag"
 )
 
 // Loader of user configuration.

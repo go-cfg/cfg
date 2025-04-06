@@ -2,13 +2,13 @@ package cfg
 
 import (
 	"encoding"
-	"flag"
 	"fmt"
 	"reflect"
 	"strings"
 	"time"
 
 	"github.com/mitchellh/mapstructure"
+	flag "github.com/spf13/pflag"
 )
 
 type structParser struct {

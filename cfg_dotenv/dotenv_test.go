@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"gopkg.in/cfg.v0"
-	"gopkg.in/cfg.v0/cfgdotenv"
+	"gopkg.in/cfg.v0/cfg_dotenv"
 )
 
 //go:embed testdata
@@ -24,7 +24,7 @@ func TestDotEnvEmbed(t *testing.T) {
 		SkipFlags:          true,
 		FailOnFileNotFound: true,
 		FileDecoders: map[string]cfg.FileDecoder{
-			".env": cfgdotenv.New(),
+			".env": cfg_dotenv.New(),
 		},
 		Files:      []string{"testdata/config.env"},
 		FileSystem: configEmbed,
@@ -51,7 +51,7 @@ func TestDotEnv(t *testing.T) {
 		SkipEnv:      true,
 		SkipFlags:    true,
 		FileDecoders: map[string]cfg.FileDecoder{
-			".env": cfgdotenv.New(),
+			".env": cfg_dotenv.New(),
 		},
 		Files: []string{filepath},
 	})

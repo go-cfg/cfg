@@ -1,4 +1,8 @@
-gopkg.in/cfg.v0 v0.17.0 h1:VYqg0YOM5yUEx0KH/VwUYF2e/PNI7dcUE66y+xEx73s=
-gopkg.in/cfg.v0 v0.17.0/go.mod h1:NXaRp+1e6bkO4dJn+wZ71xyaihMDYPtCSvEhMTm/H3E=
 github.com/joho/godotenv v1.4.0 h1:3l4+N6zfMWnkbPEXKng2o2/MR5mSwTrBih4ZEkkz1lg=
 github.com/joho/godotenv v1.4.0/go.mod h1:f4LDr5Voq0i2e/R5DDNOoa2zzDfwtkZa6DnEwAbqwq4=
+github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
+github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
+gopkg.in/cfg.v0 v0.17.0 h1:VYqg0YOM5yUEx0KH/VwUYF2e/PNI7dcUE66y+xEx73s=
+gopkg.in/cfg.v0 v0.17.0/go.mod h1:NXaRp+1e6bkO4dJn+wZ71xyaihMDYPtCSvEhMTm/H3E=
+gopkg.in/cfg.v0 v0.18.7 h1:XeAeuSFrHhbuTM1xNsSFt+4qFG9ltinOk0F7Cxbqu6I=
+gopkg.in/cfg.v0 v0.18.7/go.mod h1:KQ00jBVtCgynXFOm/JVaX69+cxCk/UTXINWs7jq0f/Y=

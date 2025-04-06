@@ -1,5 +1,7 @@
-gopkg.in/cfg.v0 v0.17.0 h1:VYqg0YOM5yUEx0KH/VwUYF2e/PNI7dcUE66y+xEx73s=
-gopkg.in/cfg.v0 v0.17.0/go.mod h1:NXaRp+1e6bkO4dJn+wZ71xyaihMDYPtCSvEhMTm/H3E=
+github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
+github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
+gopkg.in/cfg.v0 v0.18.7 h1:XeAeuSFrHhbuTM1xNsSFt+4qFG9ltinOk0F7Cxbqu6I=
+gopkg.in/cfg.v0 v0.18.7/go.mod h1:KQ00jBVtCgynXFOm/JVaX69+cxCk/UTXINWs7jq0f/Y=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=

@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"gopkg.in/cfg.v0"
-	"gopkg.in/cfg.v0/cfgtoml"
+	"gopkg.in/cfg.v0/cfg_toml"
 )
 
 //go:embed testdata
@@ -28,7 +28,7 @@ func TestTOMLEmbed(t *testing.T) {
 		SkipFlags:          true,
 		FailOnFileNotFound: true,
 		FileDecoders: map[string]cfg.FileDecoder{
-			".toml": cfgtoml.New(),
+			".toml": cfg_toml.New(),
 		},
 		Files:      []string{"testdata/config.toml"},
 		FileSystem: configEmbed,
@@ -59,7 +59,7 @@ func TestTOML(t *testing.T) {
 		SkipEnv:      true,
 		SkipFlags:    true,
 		FileDecoders: map[string]cfg.FileDecoder{
-			".toml": cfgtoml.New(),
+			".toml": cfg_toml.New(),
 		},
 		Files: []string{filepath},
 	})

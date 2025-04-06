@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"gopkg.in/cfg.v0"
-	"gopkg.in/cfg.v0/cfgyaml"
+	"gopkg.in/cfg.v0/cfg_yaml"
 )
 
 //go:embed testdata
@@ -24,7 +24,7 @@ func TestYAMLEmbed(t *testing.T) {
 		SkipFlags:          true,
 		FailOnFileNotFound: true,
 		FileDecoders: map[string]cfg.FileDecoder{
-			".yaml": cfgyaml.New(),
+			".yaml": cfg_yaml.New(),
 		},
 		Files:      []string{"testdata/config.yaml"},
 		FileSystem: configEmbed,
@@ -51,7 +51,7 @@ func TestYAML(t *testing.T) {
 		SkipEnv:      true,
 		SkipFlags:    true,
 		FileDecoders: map[string]cfg.FileDecoder{
-			".yaml": cfgyaml.New(),
+			".yaml": cfg_yaml.New(),
 		},
 		Files: []string{filepath},
 	})
@@ -121,7 +121,7 @@ func TestLoadResources(t *testing.T) {
 			Files:              []string{"res.yaml"},
 			FailOnFileNotFound: true,
 			FileDecoders: map[string]cfg.FileDecoder{
-				".yaml": cfgyaml.New(),
+				".yaml": cfg_yaml.New(),
 			},
 		})
 	if err := resourcesLoader.Load(); err != nil {
