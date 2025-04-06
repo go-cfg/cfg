@@ -1,4 +1,4 @@
-package aconfigyaml
+package cfg_yaml
 
 import (
 	"io/fs"
@@ -6,12 +6,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Decoder of YAML files for aconfig.
+// Decoder of YAML files for cfg.
 type Decoder struct {
 	fsys fs.FS
 }
 
-// New YAML decoder for aconfig.
+// New YAML decoder for cfg.
 func New() *Decoder { return &Decoder{} }
 
 // Format of the decoder.
@@ -19,7 +19,7 @@ func (d *Decoder) Format() string {
 	return "yaml"
 }
 
-// DecodeFile implements aconfig.FileDecoder.
+// DecodeFile implements cfg.FileDecoder.
 func (d *Decoder) DecodeFile(filename string) (map[string]interface{}, error) {
 	f, err := d.fsys.Open(filename)
 	if err != nil {
@@ -34,7 +34,7 @@ func (d *Decoder) DecodeFile(filename string) (map[string]interface{}, error) {
 	return raw, nil
 }
 
-// DecodeFile implements aconfig.FileDecoder.
+// DecodeFile implements cfg.FileDecoder.
 func (d *Decoder) Init(fsys fs.FS) {
 	d.fsys = fsys
 }

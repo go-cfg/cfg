@@ -1,4 +1,4 @@
-package aconfigdotenv_test
+package cfg_dotenv_test
 
 import (
 	"embed"
@@ -6,25 +6,25 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/cristalhq/aconfig"
-	"github.com/cristalhq/aconfig/aconfigdotenv"
+	"gopkg.in/cfg.v0"
+	"gopkg.in/cfg.v0/cfgdotenv"
 )
 
 //go:embed testdata
 var configEmbed embed.FS
 
 func TestDotEnvEmbed(t *testing.T) {
-	var cfg struct {
+	var mcfg struct {
 		Foo string
 		Bar string
 	}
-	loader := aconfig.LoaderFor(&cfg, aconfig.Config{
+	loader := cfg.LoaderFor(&mcfg, cfg.Config{
 		SkipDefaults:       true,
 		SkipEnv:            true,
 		SkipFlags:          true,
 		FailOnFileNotFound: true,
-		FileDecoders: map[string]aconfig.FileDecoder{
-			".env": aconfigdotenv.New(),
+		FileDecoders: map[string]cfg.FileDecoder{
+			".env": cfgdotenv.New(),
 		},
 		Files:      []string{"testdata/config.env"},
 		FileSystem: configEmbed,
@@ -34,24 +34,24 @@ func TestDotEnvEmbed(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if cfg.Foo != "value1" {
-		t.Fatalf("have: %v", cfg.Foo)
+	if mcfg.Foo != "value1" {
+		t.Fatalf("have: %v", mcfg.Foo)
 	}
-	if cfg.Bar != "value2" {
-		t.Fatalf("have: %v", cfg.Bar)
+	if mcfg.Bar != "value2" {
+		t.Fatalf("have: %v", mcfg.Bar)
 	}
 }
 
 func TestDotEnv(t *testing.T) {
 	filepath := createTestFile(t)
 
-	var cfg structConfig
-	loader := aconfig.LoaderFor(&cfg, aconfig.Config{
+	var mcfg structConfig
+	loader := cfg.LoaderFor(&mcfg, cfg.Config{
 		SkipDefaults: true,
 		SkipEnv:      true,
 		SkipFlags:    true,
-		FileDecoders: map[string]aconfig.FileDecoder{
-			".env": aconfigdotenv.New(),
+		FileDecoders: map[string]cfg.FileDecoder{
+			".env": cfgdotenv.New(),
 		},
 		Files: []string{filepath},
 	})
@@ -89,7 +89,7 @@ func TestDotEnv(t *testing.T) {
 		MI: "q,w",
 	}
 
-	if got := cfg; !reflect.DeepEqual(want, got) {
+	if got := mcfg; !reflect.DeepEqual(want, got) {
 		t.Fatalf("want %v, got %v", want, got)
 	}
 }

@@ -1,4 +1,4 @@
-package aconfig
+package cfg
 
 import (
 	"reflect"

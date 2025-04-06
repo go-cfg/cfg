@@ -1,4 +1,4 @@
-# aconfig
+# cfg
 
 [![build-img]][build-url]
 [![pkg-img]][pkg-url]
@@ -28,7 +28,7 @@ There are many solutions regarding configuration loading in Go. I was looking fo
 Go version 1.14+
 
 ```
-go get github.com/cristalhq/aconfig
+go get gopkg.in/cfg.v0
 ```
 
 ## Example
@@ -44,7 +44,7 @@ type MyConfig struct {
 }
 
 var cfg MyConfig
-loader := aconfig.LoaderFor(&cfg, aconfig.Config{
+loader := cfg.LoaderFor(&cfg, cfg.Config{
 	// feel free to skip some steps :)
 	// SkipDefaults: true,
 	// SkipFiles:    true,
@@ -53,10 +53,10 @@ loader := aconfig.LoaderFor(&cfg, aconfig.Config{
 	EnvPrefix:       "APP",
 	FlagPrefix:      "app",
 	Files:           []string{"/var/opt/myapp/config.json", "ouch.yaml"},
-	FileDecoders: map[string]aconfig.FileDecoder{
-		// from `aconfigyaml` submodule
+	FileDecoders: map[string]cfg.FileDecoder{
+		// from `cfgyaml` submodule
 		// see submodules in repo for more formats
-		".yaml": aconfigyaml.New(),
+		".yaml": cfgyaml.New(),
 	},
 })
 
@@ -75,7 +75,7 @@ if err := loader.Load(); err != nil {
 // 4. command-line flags with the prefix `app.` if they are
 ```
 
-Also see examples: [examples_test.go](https://github.com/cristalhq/aconfig/blob/master/example_test.go).
+Also see examples: [examples_test.go](https://gopkg.in/cfg.v0/blob/master/example_test.go).
 
 Integration with `spf13/cobra` [playground](https://play.golang.org/p/OsCR8qTCN0H).
 
@@ -87,9 +87,9 @@ See [these docs][pkg-url].
 
 [MIT License](LICENSE).
 
-[build-img]: https://github.com/cristalhq/aconfig/workflows/build/badge.svg
-[build-url]: https://github.com/cristalhq/aconfig/actions
-[pkg-img]: https://pkg.go.dev/badge/cristalhq/aconfig
-[pkg-url]: https://pkg.go.dev/github.com/cristalhq/aconfig
-[version-img]: https://img.shields.io/github/v/release/cristalhq/aconfig
-[version-url]: https://github.com/cristalhq/aconfig/releases
+[build-img]: https://gopkg.in/cfg.v0/workflows/build/badge.svg
+[build-url]: https://gopkg.in/cfg.v0/actions
+[pkg-img]: https://pkg.go.dev/badge/cristalhq/cfg
+[pkg-url]: https://pkg.go.dev/gopkg.in/cfg.v0
+[version-img]: https://img.shields.io/github/v/release/cristalhq/cfg
+[version-url]: https://gopkg.in/cfg.v0/releases

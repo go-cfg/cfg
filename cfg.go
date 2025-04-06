@@ -1,4 +1,4 @@
-package aconfig
+package cfg
 
 import (
 	"flag"
@@ -92,15 +92,15 @@ type Config struct {
 	// FileDecoders to enable other than JSON file formats and prevent additional dependencies.
 	// Add required submodules to the go.mod and register them in this field.
 	// Example:
-	//	FileDecoders: map[string]aconfig.FileDecoder{
-	//		".yaml": aconfigyaml.New(),
-	//		".toml": aconfigtoml.New(),
-	//		".env": aconfigdotenv.New(),
+	//	FileDecoders: map[string]cfg.FileDecoder{
+	//		".yaml": cfgyaml.New(),
+	//		".toml": cfgtoml.New(),
+	//		".env": cfgdotenv.New(),
 	// 	}
 	FileDecoders map[string]FileDecoder
 }
 
-// FileDecoder is used to read config from files. See aconfig submodules.
+// FileDecoder is used to read config from files. See cfg submodules.
 type FileDecoder interface {
 	Format() string
 	DecodeFile(filename string) (map[string]any, error)

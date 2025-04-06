@@ -1,4 +1,4 @@
-package aconfigdotenv
+package cfg_dotenv
 
 import (
 	"io/fs"
@@ -6,12 +6,12 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// Decoder of DotENV files for aconfig.
+// Decoder of DotENV files for cfg.
 type Decoder struct {
 	fsys fs.FS
 }
 
-// New .ENV decoder for aconfig.
+// New .ENV decoder for cfg.
 func New() *Decoder { return &Decoder{} }
 
 // Format of the decoder.
@@ -19,7 +19,7 @@ func (d *Decoder) Format() string {
 	return "env"
 }
 
-// DecodeFile implements aconfig.FileDecoder.
+// DecodeFile implements cfg.FileDecoder.
 func (d *Decoder) DecodeFile(filename string) (map[string]interface{}, error) {
 	file, err := d.fsys.Open(filename)
 	if err != nil {
@@ -38,7 +38,7 @@ func (d *Decoder) DecodeFile(filename string) (map[string]interface{}, error) {
 	return res, nil
 }
 
-// DecodeFile implements aconfig.FileDecoder.
+// DecodeFile implements cfg.FileDecoder.
 func (d *Decoder) Init(fsys fs.FS) {
 	d.fsys = fsys
 }

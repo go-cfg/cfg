@@ -1,4 +1,4 @@
-package aconfigyaml_test
+package cfg_yaml_test
 
 import (
 	"embed"
@@ -6,25 +6,25 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/cristalhq/aconfig"
-	"github.com/cristalhq/aconfig/aconfigyaml"
+	"gopkg.in/cfg.v0"
+	"gopkg.in/cfg.v0/cfgyaml"
 )
 
 //go:embed testdata
 var configEmbed embed.FS
 
 func TestYAMLEmbed(t *testing.T) {
-	var cfg struct {
+	var mcfg struct {
 		Foo string
 		Bar string
 	}
-	loader := aconfig.LoaderFor(&cfg, aconfig.Config{
+	loader := cfg.LoaderFor(&mcfg, cfg.Config{
 		SkipDefaults:       true,
 		SkipEnv:            true,
 		SkipFlags:          true,
 		FailOnFileNotFound: true,
-		FileDecoders: map[string]aconfig.FileDecoder{
-			".yaml": aconfigyaml.New(),
+		FileDecoders: map[string]cfg.FileDecoder{
+			".yaml": cfgyaml.New(),
 		},
 		Files:      []string{"testdata/config.yaml"},
 		FileSystem: configEmbed,
@@ -34,24 +34,24 @@ func TestYAMLEmbed(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if cfg.Foo != "value1" {
-		t.Fatalf("have: %v", cfg.Foo)
+	if mcfg.Foo != "value1" {
+		t.Fatalf("have: %v", mcfg.Foo)
 	}
-	if cfg.Bar != "value2" {
-		t.Fatalf("have: %v", cfg.Bar)
+	if mcfg.Bar != "value2" {
+		t.Fatalf("have: %v", mcfg.Bar)
 	}
 }
 
 func TestYAML(t *testing.T) {
 	filepath := createTestFile(t)
 
-	var cfg structConfig
-	loader := aconfig.LoaderFor(&cfg, aconfig.Config{
+	var mcfg structConfig
+	loader := cfg.LoaderFor(&mcfg, cfg.Config{
 		SkipDefaults: true,
 		SkipEnv:      true,
 		SkipFlags:    true,
-		FileDecoders: map[string]aconfig.FileDecoder{
-			".yaml": aconfigyaml.New(),
+		FileDecoders: map[string]cfg.FileDecoder{
+			".yaml": cfgyaml.New(),
 		},
 		Files: []string{filepath},
 	})
@@ -96,7 +96,7 @@ func TestYAML(t *testing.T) {
 		MI: mInterface,
 	}
 
-	if got := cfg; !reflect.DeepEqual(want, got) {
+	if got := mcfg; !reflect.DeepEqual(want, got) {
 		t.Fatalf("want %v, got %v", want, got)
 	}
 }
@@ -113,15 +113,15 @@ func TestLoadResources(t *testing.T) {
 		ResourcesB []ResourceB `yaml:"resources_b"`
 	}
 
-	var cfg TestConfig
+	var mcfg TestConfig
 
-	resourcesLoader := aconfig.LoaderFor(&cfg,
-		aconfig.Config{
+	resourcesLoader := cfg.LoaderFor(&mcfg,
+		cfg.Config{
 			SkipFlags:          true,
 			Files:              []string{"res.yaml"},
 			FailOnFileNotFound: true,
-			FileDecoders: map[string]aconfig.FileDecoder{
-				".yaml": aconfigyaml.New(),
+			FileDecoders: map[string]cfg.FileDecoder{
+				".yaml": cfgyaml.New(),
 			},
 		})
 	if err := resourcesLoader.Load(); err != nil {

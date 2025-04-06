@@ -1,11 +1,11 @@
-package aconfig_test
+package cfg_test
 
 import (
 	"fmt"
 	"log"
 	"os"
 
-	"github.com/cristalhq/aconfig"
+	"gopkg.in/cfg.v0"
 )
 
 type MyConfig struct {
@@ -17,8 +17,8 @@ type MyConfig struct {
 }
 
 func Example_simpleUsage() {
-	var cfg MyConfig
-	loader := aconfig.LoaderFor(&cfg, aconfig.Config{
+	var mcfg MyConfig
+	loader := cfg.LoaderFor(&mcfg, cfg.Config{
 		SkipDefaults: true,
 		SkipFiles:    true,
 		SkipEnv:      true,
@@ -31,9 +31,9 @@ func Example_simpleUsage() {
 		log.Panic(err)
 	}
 
-	fmt.Printf("HTTPPort:  %v\n", cfg.HTTPPort)
-	fmt.Printf("Auth.User: %q\n", cfg.Auth.User)
-	fmt.Printf("Auth.Pass: %q\n", cfg.Auth.Pass)
+	fmt.Printf("HTTPPort:  %v\n", mcfg.HTTPPort)
+	fmt.Printf("Auth.User: %q\n", mcfg.Auth.User)
+	fmt.Printf("Auth.Pass: %q\n", mcfg.Auth.Pass)
 
 	// Output:
 	//
@@ -43,13 +43,13 @@ func Example_simpleUsage() {
 }
 
 func Example_walkFields() {
-	var cfg MyConfig
-	loader := aconfig.LoaderFor(&cfg, aconfig.Config{
+	var mcfg MyConfig
+	loader := cfg.LoaderFor(&mcfg, cfg.Config{
 		SkipFiles: true,
 		SkipEnv:   true,
 		SkipFlags: true,
 	})
-	loader.WalkFields(func(f aconfig.Field) bool {
+	loader.WalkFields(func(f cfg.Field) bool {
 		fmt.Printf("%v: %q %q %q %q\n", f.Name(), f.Tag("env"), f.Tag("flag"), f.Tag("default"), f.Tag("usage"))
 		return true
 	})
@@ -62,8 +62,8 @@ func Example_walkFields() {
 
 // Just load defaults from struct definition.
 func Example_defaults() {
-	var cfg MyConfig
-	loader := aconfig.LoaderFor(&cfg, aconfig.Config{
+	var mcfg MyConfig
+	loader := cfg.LoaderFor(&mcfg, cfg.Config{
 		SkipFiles: true,
 		SkipEnv:   true,
 		SkipFlags: true,
@@ -72,9 +72,9 @@ func Example_defaults() {
 		log.Panic(err)
 	}
 
-	fmt.Printf("HTTPPort:  %v\n", cfg.HTTPPort)
-	fmt.Printf("Auth.User: %v\n", cfg.Auth.User)
-	fmt.Printf("Auth.Pass: %v\n", cfg.Auth.Pass)
+	fmt.Printf("HTTPPort:  %v\n", mcfg.HTTPPort)
+	fmt.Printf("Auth.User: %v\n", mcfg.Auth.User)
+	fmt.Printf("Auth.Pass: %v\n", mcfg.Auth.Pass)
 
 	// Output:
 	//
@@ -85,8 +85,8 @@ func Example_defaults() {
 
 // Load defaults from struct defunition and overwrite with a file.
 func Example_file() {
-	var cfg MyConfig
-	loader := aconfig.LoaderFor(&cfg, aconfig.Config{
+	var mcfg MyConfig
+	loader := cfg.LoaderFor(&mcfg, cfg.Config{
 		SkipEnv:   true,
 		SkipFlags: true,
 		Files:     []string{"testdata/example_config.json"},
@@ -95,9 +95,9 @@ func Example_file() {
 		log.Panic(err)
 	}
 
-	fmt.Printf("HTTPPort:  %v\n", cfg.HTTPPort)
-	fmt.Printf("Auth.User: %v\n", cfg.Auth.User)
-	fmt.Printf("Auth.Pass: %v\n", cfg.Auth.Pass)
+	fmt.Printf("HTTPPort:  %v\n", mcfg.HTTPPort)
+	fmt.Printf("Auth.User: %v\n", mcfg.Auth.User)
+	fmt.Printf("Auth.Pass: %v\n", mcfg.Auth.Pass)
 
 	// Output:
 	//
@@ -114,8 +114,8 @@ func Example_env() {
 	os.Setenv("EXAMPLE_AUTH_PASS", "env-pass")
 	defer os.Clearenv()
 
-	var cfg MyConfig
-	loader := aconfig.LoaderFor(&cfg, aconfig.Config{
+	var mcfg MyConfig
+	loader := cfg.LoaderFor(&mcfg, cfg.Config{
 		SkipFlags: true,
 		EnvPrefix: "EXAMPLE",
 		Files:     []string{"testdata/example_config.json"},
@@ -124,9 +124,9 @@ func Example_env() {
 		log.Panic(err)
 	}
 
-	fmt.Printf("HTTPPort:  %v\n", cfg.HTTPPort)
-	fmt.Printf("Auth.User: %v\n", cfg.Auth.User)
-	fmt.Printf("Auth.Pass: %v\n", cfg.Auth.Pass)
+	fmt.Printf("HTTPPort:  %v\n", mcfg.HTTPPort)
+	fmt.Printf("Auth.User: %v\n", mcfg.Auth.User)
+	fmt.Printf("Auth.Pass: %v\n", mcfg.Auth.Pass)
 
 	// Output:
 	//
@@ -139,8 +139,8 @@ func Example_env() {
 // And then overwrite with environment variables.
 // Finally read command line flags.
 func Example_flag() {
-	var cfg MyConfig
-	loader := aconfig.LoaderFor(&cfg, aconfig.Config{
+	var mcfg MyConfig
+	loader := cfg.LoaderFor(&mcfg, cfg.Config{
 		FlagPrefix: "ex",
 		Files:      []string{"testdata/example_config.json"},
 	})
@@ -164,9 +164,9 @@ func Example_flag() {
 		log.Panic(err)
 	}
 
-	fmt.Printf("HTTPPort:  %v\n", cfg.HTTPPort)
-	fmt.Printf("Auth.User: %v\n", cfg.Auth.User)
-	fmt.Printf("Auth.Pass: %v\n", cfg.Auth.Pass)
+	fmt.Printf("HTTPPort:  %v\n", mcfg.HTTPPort)
+	fmt.Printf("Auth.User: %v\n", mcfg.Auth.User)
+	fmt.Printf("Auth.Pass: %v\n", mcfg.Auth.Pass)
 
 	// Output:
 	//

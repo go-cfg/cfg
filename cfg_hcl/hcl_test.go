@@ -1,4 +1,4 @@
-package aconfigtoml_test
+package cfg_hcl_test
 
 import (
 	"embed"
@@ -6,31 +6,27 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/cristalhq/aconfig"
-	"github.com/cristalhq/aconfig/aconfigtoml"
+	"gopkg.in/cfg.v0"
+	"gopkg.in/cfg.v0/cfghcl"
 )
 
 //go:embed testdata
 var configEmbed embed.FS
 
-func TestTOMLEmbed(t *testing.T) {
-	var cfg struct {
-		Foo    string
-		Bar    string
-		Outter map[string]map[string][]struct {
-			A string
-			B string
-		}
+func TestHCLEmbed(t *testing.T) {
+	var mcfg struct {
+		Foo string
+		Bar string
 	}
-	loader := aconfig.LoaderFor(&cfg, aconfig.Config{
+	loader := cfg.LoaderFor(&mcfg, cfg.Config{
 		SkipDefaults:       true,
 		SkipEnv:            true,
 		SkipFlags:          true,
 		FailOnFileNotFound: true,
-		FileDecoders: map[string]aconfig.FileDecoder{
-			".toml": aconfigtoml.New(),
+		FileDecoders: map[string]cfg.FileDecoder{
+			".hcl": cfghcl.New(),
 		},
-		Files:      []string{"testdata/config.toml"},
+		Files:      []string{"testdata/config.hcl"},
 		FileSystem: configEmbed,
 	})
 
@@ -38,28 +34,23 @@ func TestTOMLEmbed(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if cfg.Foo != "value1" {
-		t.Fatalf("have: %v", cfg.Foo)
+	if mcfg.Foo != "value1" {
+		t.Fatalf("have: %v", mcfg.Foo)
 	}
-	if cfg.Bar != "value2" {
-		t.Fatalf("have: %v", cfg.Bar)
-	}
-
-	if cfg.Outter["inner"]["t1"][0].A != "a" {
-		t.Fatalf("have: %v", cfg.Outter["inner"]["t1"][0].A)
+	if mcfg.Bar != "value2" {
+		t.Fatalf("have: %v", mcfg.Bar)
 	}
 }
-
-func TestTOML(t *testing.T) {
+func TestHCL(t *testing.T) {
 	filepath := createTestFile(t)
 
-	var cfg structConfig
-	loader := aconfig.LoaderFor(&cfg, aconfig.Config{
+	var mcfg structConfig
+	loader := cfg.LoaderFor(&mcfg, cfg.Config{
 		SkipDefaults: true,
 		SkipEnv:      true,
 		SkipFlags:    true,
-		FileDecoders: map[string]aconfig.FileDecoder{
-			".toml": aconfigtoml.New(),
+		FileDecoders: map[string]cfg.FileDecoder{
+			".hcl": cfghcl.New(),
 		},
 		Files: []string{filepath},
 	})
@@ -104,7 +95,7 @@ func TestTOML(t *testing.T) {
 		MI: mInterface,
 	}
 
-	if got := cfg; !reflect.DeepEqual(want, got) {
+	if got := mcfg; !reflect.DeepEqual(want, got) {
 		t.Fatalf("want %v, got %v", want, got)
 	}
 }
@@ -116,7 +107,7 @@ func createTestFile(t *testing.T) string {
 		os.RemoveAll(dir)
 	})
 
-	filepath := dir + "/testfile.toml"
+	filepath := dir + "/testfile.hcl"
 
 	f, err := os.Create(filepath)
 	if err != nil {
@@ -131,71 +122,74 @@ func createTestFile(t *testing.T) string {
 }
 
 type structConfig struct {
-	A string
-	C int
-	E float64
-	B []byte
-	I *int32
-	J *int64
-	Y structY
+	A string  `hcl:"a"`
+	C int     `hcl:"c"`
+	E float64 `hcl:"e"`
+	B []byte  `hcl:"b"`
+	I *int32  `hcl:"i"`
+	J *int64  `hcl:"j"`
+	Y structY `hcl:"y"`
 
-	AA structA `toml:"A"`
+	AA structA `hcl:"A"`
 	StructM
-	MI interface{} `toml:"MI"`
+	MI interface{} `hcl:"MI"`
 }
 
 type structY struct {
-	X string
-	Z []string
-	A structD
+	X string   `hcl:"x"`
+	Z []string `hcl:"z"`
+	A structD  `hcl:"A"`
 }
 
 type structA struct {
-	X  string  `toml:"x"`
-	BB structB `toml:"B"`
+	X  string  `hcl:"x"`
+	BB structB `hcl:"B"`
 }
 
 type structB struct {
-	CC structC  `toml:"C"`
-	DD []string `toml:"D"`
+	CC structC  `hcl:"C"`
+	DD []string `hcl:"D"`
 }
 
 type structC struct {
-	MM string `toml:"m"`
-	BB []byte `toml:"b"`
+	MM string `hcl:"m"`
+	BB []byte `hcl:"b"`
 }
 
 type structD struct {
-	I bool
+	I bool `hcl:"i"`
 }
 
 type StructM struct {
-	M string
+	M string `hcl:"M"`
 }
 
 const testfileContent = `
-a = "b"
-c = 10
-e = 123.456
-b = "abc"
-i = 42
-j = 420
-m = "n"
-MI = ["q", "w"]
+"a" = "b"
+"c" = 10
+"e" = 123.456
+"b" = "abc"
+"i" = 42
+"j" = 420
 
-[y]
-x = "y"
-z = [ 1, 2, 3 ]
-    [y.a]
-    i = true
+"y" = {
+	"x" = "y"
+	"z" = ["1", "2", "3"]
+	"A" = {
+		"i" = true
+	}
+}
+"A" = {
+	"x" = "y"
+	"B" = {
+		"C" = {
+			"m" = "n"
+			"b" = "boo"
+		}
+		"D" = ["x", "y", "z"]
+	}
+}
 
-[A]
-    x = "y"
-
-	[A.B]
-	D = ["x", "y", "z"]
-
-    [A.B.C]
-	m = "n"
-	b = "boo"
+"M" = "n"
+"MI" = ["q", "w"]
 `

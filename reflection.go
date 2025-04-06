@@ -1,4 +1,4 @@
-package aconfig
+package cfg
 
 import (
 	"encoding"
@@ -41,7 +41,7 @@ func (l *Loader) newSimpleFieldData(value reflect.Value) *fieldData {
 func (l *Loader) newFieldData(field reflect.StructField, value reflect.Value, parent *fieldData) *fieldData {
 	requiredTag := field.Tag.Get("required")
 	if requiredTag != "" && requiredTag != "true" {
-		panic(fmt.Sprintf("aconfig: incorrect value for 'required' tag: %v", requiredTag))
+		panic(fmt.Sprintf("cfg: incorrect value for 'required' tag: %v", requiredTag))
 	}
 
 	fd := &fieldData{

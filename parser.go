@@ -1,4 +1,4 @@
-package aconfig
+package cfg
 
 import (
 	"encoding"
@@ -50,7 +50,7 @@ func (pf *parsedField) String() string {
 func (sp *structParser) newParseField(parent *parsedField, field reflect.StructField) (*parsedField, error) {
 	requiredTag := field.Tag.Get("required")
 	if requiredTag != "" && requiredTag != "true" {
-		panic(fmt.Sprintf("aconfig: value for 'required' tag can be only 'true' got: %q", requiredTag))
+		panic(fmt.Sprintf("cfg: value for 'required' tag can be only 'true' got: %q", requiredTag))
 	}
 
 	name := field.Tag.Get("name")
@@ -355,7 +355,7 @@ func (sp *structParser) apply(x any) error {
 		WeaklyTypedInput: true, // TODO: temp fix?
 	})
 	if err != nil {
-		panic(fmt.Sprintf("aconfig: BUG with mapstructure.NewDecoder: %v", err))
+		panic(fmt.Sprintf("cfg: BUG with mapstructure.NewDecoder: %v", err))
 	}
 
 	if err := dec.Decode(sp.fields); err != nil {

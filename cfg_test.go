@@ -1,4 +1,4 @@
-package aconfig
+package cfg
 
 import (
 	"embed"
@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-var newParser = os.Getenv("ACONFIG_NEW") == "true"
+var newParser = os.Getenv("cfg_NEW") == "true"
 
 func TestTrueSkip(t *testing.T) {
 	var cfg TestConfig

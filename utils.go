@@ -1,4 +1,4 @@
-package aconfig
+package cfg
 
 import (
 	"encoding/json"
@@ -13,17 +13,17 @@ import (
 
 func assertStruct(x interface{}) {
 	if x == nil {
-		panic("aconfig: destination cannot be nil")
+		panic("cfg: destination cannot be nil")
 	}
 	value := reflect.ValueOf(x)
 	if value.Type().Kind() != reflect.Ptr {
-		panic("aconfig: destination must be a pointer")
+		panic("cfg: destination must be a pointer")
 	}
 	if value.Type().Kind() == reflect.Ptr {
 		value = value.Elem()
 	}
 	if value.Kind() != reflect.Struct {
-		panic("aconfig: destination must be struct")
+		panic("cfg: destination must be struct")
 	}
 }
 

@@ -1,4 +1,4 @@
-module github.com/cristalhq/aconfig
+module gopkg.in/cfg.v0
 
 go 1.18
 
