@@ -45,16 +45,18 @@ func getEnv(env []string) map[string]interface{} {
 
 func getFlags(flagSet *flag.FlagSet) map[string]interface{} {
 	res := map[string]interface{}{}
-	flagSet.Visit(func(f *flag.Flag) {
-		res[f.Name] = f.Value.String()
+	flagSet.VisitAll(func(f *flag.Flag) {
+		if f.Changed {
+			res[f.Name] = f.Value.String()
+		}
 	})
 	return res
 }
 
 func getActualFlag(name string, flagSet *flag.FlagSet) *flag.Flag {
 	var found *flag.Flag
-	flagSet.Visit(func(f *flag.Flag) {
-		if f.Name == name {
+	flagSet.VisitAll(func(f *flag.Flag) {
+		if f.Changed && f.Name == name {
 			found = f
 		}
 	})
