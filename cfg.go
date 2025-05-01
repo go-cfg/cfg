@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 
 	flag "github.com/spf13/pflag"
@@ -99,6 +100,12 @@ type Config struct {
 	//		".env": cfgdotenv.New(),
 	// 	}
 	FileDecoders map[string]FileDecoder
+
+	// ReplaceVarFunc is a function to replace the default value with the value from the environment variable.
+	ReplaceVarFunc func(string) string
+
+	// IsReplaceVarFunc is a function to check if the default value should be replaced with the ReplaceVarFunc
+	IsReplaceVarFunc func(tag reflect.StructTag) bool
 }
 
 // FileDecoder is used to read config from files. See cfg submodules.
@@ -197,7 +204,11 @@ func (l *Loader) init() {
 					return
 				}
 				names[flagName] = true
-				l.flagSet.String(flagName, field.Tag("default"), field.Tag("usage"))
+				defaultValue := field.Tag("default")
+				if l.config.IsReplaceVarFunc != nil && l.config.ReplaceVarFunc != nil && l.config.IsReplaceVarFunc(field.field.Tag) {
+					defaultValue = l.config.ReplaceVarFunc(defaultValue)
+				}
+				l.flagSet.String(flagName, defaultValue, field.Tag("usage"))
 			}
 		}
 	}
