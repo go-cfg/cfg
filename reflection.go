@@ -147,6 +147,10 @@ func (l *Loader) getFieldsHelper(valueObject reflect.Value, parent *fieldData) [
 }
 
 func (l *Loader) setFieldData(field *fieldData, value interface{}) error {
+	if value == nil {
+		return nil
+	}
+
 	// unwrap pointers
 	for field.value.Type().Kind() == reflect.Ptr {
 		if field.value.IsNil() {
@@ -193,42 +197,27 @@ func (l *Loader) setFieldData(field *fieldData, value interface{}) error {
 		return l.m2s(mii(value), fd.value)
 
 	case reflect.Slice:
-		if field.field.Type.Elem().Kind() == reflect.Struct {
-			if value == nil {
-				return nil
-			}
-
-			if v, ok := value.([]interface{}); ok {
-				slice := reflect.MakeSlice(field.field.Type, len(v), len(v))
-				for i, val := range v {
-					vv := mii(val)
-
-					fd := l.newFieldData(reflect.StructField{}, slice.Index(i), nil)
-					if err := l.m2s(vv, fd.value); err != nil {
-						return err
-					}
-				}
-				field.value.Set(slice)
-				return nil
-			}
-
-			v, ok := value.([]map[string]interface{})
-			if !ok {
-				panic(fmt.Errorf("%T %v", value, value))
-			}
-
-			slice := reflect.MakeSlice(field.field.Type, len(v), len(v))
-			for i, val := range v {
-				fd := l.newFieldData(reflect.StructField{}, slice.Index(i), nil)
-				if err := l.m2s(val, fd.value); err != nil {
-					return err
-				}
-			}
-			field.value.Set(slice)
-
-			return nil
+		if isPrimitive(field.field.Type.Elem()) {
+			return l.setSlice(field, l.sliceToString(value))
 		}
-		return l.setSlice(field, sliceToString(value))
+
+		in := reflect.ValueOf(value)
+		if in.Kind() != reflect.Slice {
+			panic(fmt.Errorf("%T %v", value, value))
+		}
+
+		out := reflect.MakeSlice(field.field.Type, in.Len(), in.Len())
+		field.value.Set(out)
+
+		for i := 0; i < in.Len(); i++ {
+			fd := l.newFieldData(reflect.StructField{}, out.Index(i), nil)
+
+			if err := l.setFieldData(fd, in.Index(i).Interface()); err != nil {
+				return err
+			}
+		}
+
+		return nil
 
 	case reflect.Map:
 		v, ok := value.(map[string]interface{})
@@ -325,7 +314,7 @@ func (l *Loader) setSlice(field *fieldData, value string) error {
 		return nil
 	}
 
-	vals := strings.Split(value, ",")
+	vals := strings.Split(value, l.config.SliceSeparator)
 	slice := reflect.MakeSlice(field.field.Type, len(vals), len(vals))
 	for i, val := range vals {
 		val = strings.TrimSpace(val)
@@ -380,35 +369,12 @@ func (l *Loader) m2s(m map[string]interface{}, structValue reflect.Value) error 
 			return fmt.Errorf("cannot set %q field value", name)
 		}
 
-		val := reflect.ValueOf(value)
-		if structFieldValue.Type() != val.Type() {
-			if structFieldValue.Kind() == reflect.Slice && val.Kind() == reflect.Slice {
-				vals := value.([]interface{})
-				slice := reflect.MakeSlice(structFieldValue.Type(), len(vals), len(vals))
-				if isPrimitive(structFieldValue.Type().Elem()) {
-					for i := 0; i < len(vals); i++ {
-						fd := l.newFieldData(reflect.StructField{}, slice.Index(i), nil)
-						if err := l.setFieldData(fd, vals[i]); err != nil {
-							return fmt.Errorf("incorrect slice item %q: %w", vals[i], err)
-						}
-					}
-				} else {
-					for i := 0; i < len(vals); i++ {
-						a := mii(vals[i])
-						b := slice.Index(i)
-						if err := l.m2s(a, b); err != nil {
-							return err
-						}
-					}
-				}
-				structFieldValue.Set(slice)
-				continue
-			} else {
-				return fmt.Errorf("provided value type do not match struct field type (%v and %v)", structFieldValue.Type(), val.Type())
-			}
-		}
+		field, _ := structValue.Type().FieldByName(name)
 
-		structFieldValue.Set(val)
+		fd := l.newFieldData(field, structFieldValue, nil)
+		if err := l.setFieldData(fd, value); err != nil {
+			return err
+		}
 	}
 	return nil
 }

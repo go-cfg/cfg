@@ -106,6 +106,8 @@ type Config struct {
 
 	// IsReplaceVarFunc is a function to check if the default value should be replaced with the ReplaceVarFunc
 	IsReplaceVarFunc func(tag reflect.StructTag) bool
+	// SliceSeparator hold the separator for slice values. Default is ",".
+	SliceSeparator string
 }
 
 // FileDecoder is used to read config from files. See cfg submodules.
@@ -216,6 +218,10 @@ func (l *Loader) init() {
 	if l.config.FileFlag != "" {
 		// TODO: should be prefixed ?
 		l.flagSet.String(l.config.FileFlag, "", "config file param")
+	}
+
+	if l.config.SliceSeparator == "" {
+		l.config.SliceSeparator = ","
 	}
 }
 

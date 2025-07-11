@@ -182,13 +182,13 @@ func (d *jsonDecoder) DecodeFile(filename string) (map[string]interface{}, error
 	return raw, nil
 }
 
-func sliceToString(curr interface{}) string {
+func (l *Loader) sliceToString(curr interface{}) string {
 	switch curr := curr.(type) {
 	case []interface{}:
 		b := &strings.Builder{}
 		for i, v := range curr {
 			if i > 0 {
-				b.WriteByte(',')
+				b.WriteString(l.config.SliceSeparator)
 			}
 			fmt.Fprint(b, v)
 		}
