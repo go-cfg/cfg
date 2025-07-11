@@ -152,9 +152,9 @@ func Example_flag() {
 	// to make test example work
 	// feel free to remove it completely during copy-paste :)
 	os.Args = append([]string{}, os.Args[0],
-		"-ex.http_port=4444",
-		"-ex.auth.user=flag-user",
-		"-ex.auth.pass=flag-pass",
+		"--ex.http_port=4444",
+		"--ex.auth.user=flag-user",
+		"--ex.auth.pass=flag-pass",
 	)
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		log.Panic(err)

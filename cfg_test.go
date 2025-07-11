@@ -388,7 +388,7 @@ func TestFileFlag(t *testing.T) {
 	file1 := "testdata/config1.json"
 
 	flags := []string{
-		"-file_flag=testdata/config2.json",
+		"--file_flag=testdata/config2.json",
 	}
 
 	var cfg TestConfig
@@ -501,13 +501,13 @@ func TestFlag(t *testing.T) {
 	})
 
 	flags := []string{
-		"-tst.str=str-flag",
-		"-tst.bytes=Ynl0ZXMtZmxhZw==",
-		"-tst.int=1001",
-		"-tst.http_port=30000",
-		"-tst.sub.float=123.321",
-		"-tst.anon.is_anon=true",
-		"-tst.em=em-flag",
+		"--tst.str=str-flag",
+		"--tst.bytes=Ynl0ZXMtZmxhZw==",
+		"--tst.int=1001",
+		"--tst.http_port=30000",
+		"--tst.sub.float=123.321",
+		"--tst.anon.is_anon=true",
+		"--tst.em=em-flag",
 	}
 
 	failIfErr(t, loader.Flags().Parse(flags))
@@ -673,8 +673,7 @@ func TestUsage(t *testing.T) {
 	flags.PrintDefaults()
 
 	have := builder.String()
-	want := `  -em string
-    	use... em...field. (default "em-def")
+	want := `      --em string   use... em...field. (default "em-def")
 `
 	mustEqual(t, have, want)
 }
@@ -840,7 +839,7 @@ func TestBadFlags(t *testing.T) {
 		FlagPrefix:   "tst",
 	})
 
-	args := []string{"-tst.param=10a01"}
+	args := []string{"--tst.param=10a01"}
 
 	failIfErr(t, loader.Flags().Parse(args))
 	failIfOk(t, loader.Load())
@@ -915,9 +914,9 @@ func TestUnknownFlags(t *testing.T) {
 	})
 
 	flags := []string{
-		"-tst.str=str-flag",
-		"-tst.unknown=1001",
-		"-just_env=just_value",
+		"--tst.str=str-flag",
+		"--tst.unknown=1001",
+		"--just_env=just_value",
 	}
 
 	// just for tests
@@ -947,8 +946,8 @@ func TestUnknownFlagsWithEmptyPrefix(t *testing.T) {
 	})
 
 	flags := []string{
-		"-str=str-flag",
-		"-unknown=1001",
+		"--str=str-flag",
+		"--unknown=1001",
 	}
 
 	// just for tests
@@ -989,7 +988,7 @@ func TestCustomEnvsAndArgs(t *testing.T) {
 	loader := LoaderFor(&cfg, Config{
 		SkipDefaults: true,
 		Envs:         []string{"PARAM=2"},
-		Args:         []string{"-str=4"},
+		Args:         []string{"--str=4"},
 	})
 
 	failIfErr(t, loader.Load())
@@ -1015,7 +1014,7 @@ func TestCustomNames(t *testing.T) {
 	var cfg TestConfig
 	loader := LoaderFor(&cfg, Config{
 		NewParser: newParser,
-		Args:      []string{"-two=2", "-four=4"},
+		Args:      []string{"--two=2", "--four=4"},
 	})
 
 	failIfErr(t, loader.Load())
