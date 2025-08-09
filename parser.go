@@ -253,9 +253,9 @@ func (sp *structParser) parseStructHelper(parent *parsedField, structValue refle
 					value = []byte(defaultTagValue)
 				} else {
 					values := []any{}
-					if defaultTagValue != "" && !strings.Contains(defaultTagValue, ",") {
-						return nil, fmt.Errorf("incorrect default tag value for slice/array: %v", defaultTagValue)
-					}
+					// if defaultTagValue != "" && !strings.Contains(defaultTagValue, ",") {
+					// 	return nil, fmt.Errorf("incorrect default tag value for slice/array: %v", defaultTagValue)
+					// }
 					for _, val := range strings.Split(defaultTagValue, ",") {
 						values = append(values, val)
 					}
