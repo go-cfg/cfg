@@ -47,6 +47,39 @@ func (pf *parsedField) String() string {
 	return fmt.Sprintf("%+v", *pf)
 }
 
+func (sp *structParser) parentFullTag(parent *parsedField, tag string) string {
+	for p := parent; p != nil; p = p.parent {
+		if value := p.tags[tag]; value != "" {
+			return value
+		}
+	}
+	return ""
+}
+
+func (sp *structParser) makeFullTag(parent *parsedField, value, prefix, sep, parentTag string) string {
+	if value == "-" {
+		return ""
+	}
+	if exactName, _, ok := strings.Cut(value, ",exact"); ok {
+		return exactName
+	}
+	if exactName, _, ok := strings.Cut(value, ",omitempty"); ok {
+		return exactName
+	}
+
+	if parentFull := sp.parentFullTag(parent, parentTag); parentFull != "" {
+		return parentFull + sep + value
+	}
+	return prefix + value
+}
+
+func isStructField(t reflect.Type) bool {
+	if t.Kind() == reflect.Pointer {
+		t = t.Elem()
+	}
+	return t.Kind() == reflect.Struct
+}
+
 func (sp *structParser) newParseField(parent *parsedField, field reflect.StructField) (*parsedField, error) {
 	requiredTag := field.Tag.Get("required")
 	if requiredTag != "" && requiredTag != "true" {
@@ -70,25 +103,9 @@ func (sp *structParser) newParseField(parent *parsedField, field reflect.StructF
 		flag = newName
 	}
 
-	var parentName, parentEnv, parentFlag string
+	var parentName string
 	if parent != nil {
 		parentName = parent.namefull + "|"
-
-		for p := parent; p != nil; p = p.parent {
-			parentEnv = p.tags["env_name"]
-			if parentEnv != "-" {
-				break
-			}
-		}
-		for p := parent; p != nil; p = p.parent {
-			parentFlag = p.tags["flag_name"]
-			if parentFlag != "-" {
-				break
-			}
-		}
-
-		parentEnv += sp.cfg.envDelimiter
-		parentFlag += sp.cfg.FlagDelimiter
 	}
 
 	pfield := &parsedField{
@@ -98,30 +115,20 @@ func (sp *structParser) newParseField(parent *parsedField, field reflect.StructF
 		tags: map[string]string{
 			"usage":     field.Tag.Get("usage"),
 			"env_name":  env,
-			"env_full":  sp.cfg.EnvPrefix + parentEnv + env,
 			"flag_name": flag,
-			"flag_full": sp.cfg.FlagPrefix + parentFlag + flag,
 		},
 		isRequired: requiredTag == "true",
+	}
+	if full := sp.makeFullTag(parent, env, sp.cfg.EnvPrefix, sp.cfg.envDelimiter, "env_full"); full != "" {
+		pfield.tags["env_full"] = full
+	}
+	if full := sp.makeFullTag(parent, flag, sp.cfg.FlagPrefix, sp.cfg.FlagDelimiter, "flag_full"); full != "" {
+		pfield.tags["flag_full"] = full
 	}
 
 	if !sp.cfg.SkipDefaults {
 		// TODO: must be typed?
 		pfield.defaultValue = field.Tag.Get("default")
-	}
-
-	if env == "-" {
-		delete(pfield.tags, "env_full")
-	}
-	if flag == "-" {
-		delete(pfield.tags, "flag_full")
-	}
-
-	if exactName, _, ok := strings.Cut(env, ",exact"); ok {
-		pfield.tags["env_full"] = exactName
-	}
-	if exactName, _, ok := strings.Cut(flag, ",exact"); ok {
-		pfield.tags["flag_full"] = exactName
 	}
 
 	if !sp.cfg.AllowDuplicates {
@@ -139,8 +146,10 @@ func (sp *structParser) newParseField(parent *parsedField, field reflect.StructF
 				return nil, fmt.Errorf("duplicate flag %q", flagName)
 			}
 			sp.flagNames[flagName] = struct{}{}
-			// TODO: must be typed
-			sp.flagSet.String(flagName, field.Tag.Get("default"), field.Tag.Get("usage"))
+			if !isStructField(field.Type) {
+				// TODO: must be typed
+				sp.flagSet.String(flagName, field.Tag.Get("default"), field.Tag.Get("usage"))
+			}
 		}
 	}
 
@@ -457,10 +466,12 @@ func (sp *structParser) applyLevelHelper(fields map[string]any, tag string, valu
 func (sp *structParser) applyFlat(tag string, values map[string]any) error {
 	allowUnknown := true
 	prefix := ""
+	label := tag
 
 	switch tag {
 	case "env":
 		allowUnknown, prefix = sp.cfg.AllowUnknownEnvs, sp.cfg.EnvPrefix
+		label = "environment var"
 	case "flag":
 		allowUnknown, prefix = sp.cfg.AllowUnknownFlags, sp.cfg.FlagPrefix
 	}
@@ -480,7 +491,7 @@ func (sp *structParser) applyFlat(tag string, values map[string]any) error {
 	}
 	for key, value := range values {
 		if strings.HasPrefix(key, prefix) {
-			return fmt.Errorf("unknown %s %s=%v (see AllowUnknownXXX config param)", tag, key, value)
+			return fmt.Errorf("unknown %s %s=%v (see AllowUnknownXXX config param)", label, key, value)
 		}
 	}
 	return nil
@@ -495,23 +506,21 @@ func (sp *structParser) applyFlatHelper(fields map[string]any, tag string, value
 		}
 
 		tagValue, ok := pfield.tags[tag+"_full"]
-		if !ok {
-			continue
-		}
-		value, ok := values[tagValue]
-		if !ok {
-			if !pfield.hasChilds {
+		if ok {
+			value, ok := values[tagValue]
+			if ok {
+				pfield.value = value
+				if !sp.cfg.AllowDuplicates {
+					delete(values, tagValue)
+				}
 				continue
 			}
+		}
+
+		if pfield.hasChilds {
 			if err := sp.applyFlatHelper(pfield.value.(map[string]any), tag, values); err != nil {
 				return err
 			}
-			continue
-		}
-
-		pfield.value = value
-		if !sp.cfg.AllowDuplicates {
-			delete(values, tagValue)
 		}
 	}
 	return nil

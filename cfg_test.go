@@ -7,10 +7,13 @@ import (
 	"net/url"
 	"os"
 	"reflect"
+	"sort"
 	"strings"
 	"testing"
 	"testing/fstest"
 	"time"
+
+	flag "github.com/spf13/pflag"
 )
 
 var newParser = os.Getenv("cfg_NEW") == "true"
@@ -531,6 +534,57 @@ func TestFlag(t *testing.T) {
 			Em: "em-flag",
 		},
 	}
+	mustEqual(t, cfg, want)
+}
+
+func TestDeepNestedFlags(t *testing.T) {
+	type TestConfig struct {
+		Server struct {
+			HTTP struct {
+				Listen string `default:"0.0.0.0"`
+				CORS   struct {
+					AllowOrigins string `default:"*" flag:"allow_origins"`
+				}
+			}
+			Hidden struct {
+				Token string `default:"secret"`
+			} `flag:"-"`
+		}
+	}
+
+	var cfg TestConfig
+	loader := LoaderFor(&cfg, Config{
+		NewParser:    newParser,
+		SkipDefaults: true,
+		SkipFiles:    true,
+		SkipEnv:      true,
+		FlagPrefix:   "cfg",
+	})
+
+	var names []string
+	loader.Flags().VisitAll(func(f *flag.Flag) {
+		names = append(names, f.Name)
+	})
+	sort.Strings(names)
+
+	wantNames := []string{
+		"cfg.server.http.cors.allow_origins",
+		"cfg.server.http.listen",
+		"cfg.server.token",
+	}
+	mustEqual(t, names, wantNames)
+
+	failIfErr(t, loader.Flags().Parse([]string{
+		"--cfg.server.http.listen=127.0.0.1",
+		"--cfg.server.http.cors.allow_origins=https://example.com",
+		"--cfg.server.token=override",
+	}))
+	failIfErr(t, loader.Load())
+
+	want := TestConfig{}
+	want.Server.HTTP.Listen = "127.0.0.1"
+	want.Server.HTTP.CORS.AllowOrigins = "https://example.com"
+	want.Server.Hidden.Token = "override"
 	mustEqual(t, cfg, want)
 }
 
